@@ -1,5 +1,5 @@
 const sqlCreateFunction = (channel, schema, fn) => {
-    return `
+  return `
         CREATE OR REPLACE FUNCTION ${schema}.${fn}() RETURNS trigger AS $$
         DECLARE
           data json;
@@ -17,7 +17,7 @@ const sqlCreateFunction = (channel, schema, fn) => {
               
             WHEN 'DELETE' THEN
               prev = row_to_json(OLD);
-          END
+          END CASE;
 
           notification = json_build_object(
             'type', TG_OP,
@@ -32,9 +32,9 @@ const sqlCreateFunction = (channel, schema, fn) => {
           RETURN NULL;
         END;
         $$ LANGUAGE plpgsql;
-        `;
-};
+        `
+}
 
 module.exports = (channel, schema, functionName) => async client => {
-    await client.query(sqlCreateFunction(channel, schema, functionName));
-};
+  await client.query(sqlCreateFunction(channel, schema, functionName))
+}
